@@ -1,9 +1,10 @@
 package com.bpao.devfoliobuilderapi.infrastructure.adapter.in.web;
 
 import com.bpao.devfoliobuilderapi.application.dto.AuthenticatedUser;
+import com.bpao.devfoliobuilderapi.application.dto.portfolio.PortfolioMapper;
+import com.bpao.devfoliobuilderapi.application.dto.user.MeResponse;
 import com.bpao.devfoliobuilderapi.application.dto.user.UserMapper;
-import com.bpao.devfoliobuilderapi.application.dto.user.UserResponse;
-import com.bpao.devfoliobuilderapi.application.port.in.user.GetCurrentUserUseCase;
+import com.bpao.devfoliobuilderapi.application.port.in.user.SyncUserUseCase;
 import com.bpao.devfoliobuilderapi.infrastructure.security.AuthenticatedUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,11 +19,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final GetCurrentUserUseCase getCurrentUserUseCase;
+    private final SyncUserUseCase syncUserUseCase;
 
     @GetMapping("/me")
-    public Mono<UserResponse> me(@AuthenticationPrincipal Jwt jwt) {
+    public Mono<MeResponse> me(@AuthenticationPrincipal Jwt jwt) {
         AuthenticatedUser principal = AuthenticatedUserMapper.from(jwt);
-        return getCurrentUserUseCase.findOrCreate(principal).map(UserMapper::toResponse);
+        return syncUserUseCase.sync(principal)
+                .map(result -> new MeResponse(
+                        UserMapper.toResponse(result.user()),
+                        PortfolioMapper.toResponse(result.portfolio())));
     }
 }

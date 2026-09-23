@@ -15,7 +15,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${JWT_ISSUER_URI:https://tu-neon-auth-domain.com}
+          issuer-uri: ${JWT_ISSUER_URI:https://ep-withered-salad-acdqzx2b.neonauth.sa-east-1.aws.neon.tech}
+          jwk-set-uri: ${JWT_JWKS_URI:https://ep-withered-salad-acdqzx2b.neonauth.sa-east-1.aws.neon.tech/foliobuilderdevbd/auth/.well-known/jwks.json}
 
 springdoc:
   api-docs:

@@ -15,10 +15,23 @@ import java.time.Instant;
 @AllArgsConstructor
 public class PortfolioBlock {
 
+    public static final String TYPE_HERO = "HERO";
+    public static final int DEFAULT_POSITION = 0;
+    public static final String EMPTY_SETTINGS = "{}";
+
     private final Long id;
     private final Long portfolioId;
     private final String type;
     private final int position;
     private final String settings;
     private final Instant createdAt;
+
+    public static PortfolioBlock createHero(Long portfolioId) {
+        return builder()
+                .portfolioId(portfolioId)
+                .type(TYPE_HERO)
+                .position(DEFAULT_POSITION)
+                .settings(EMPTY_SETTINGS)
+                .build();
+    }
 }
