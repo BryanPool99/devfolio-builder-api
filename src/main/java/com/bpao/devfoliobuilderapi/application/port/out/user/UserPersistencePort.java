@@ -10,5 +10,7 @@ public interface UserPersistencePort {
 
     Mono<User> findByAuthId(String authId);
 
+    Mono<User> findByUsername(String username);
+
     Mono<User> save(User user);
 }

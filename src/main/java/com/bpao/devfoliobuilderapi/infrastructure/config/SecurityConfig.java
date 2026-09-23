@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.GET, "/p/**", "/api/v1/public/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/public/**").permitAll()
                         .pathMatchers(
                                 "/actuator/health/**",
                                 "/actuator/info",

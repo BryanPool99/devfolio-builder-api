@@ -60,9 +60,10 @@ public class SyncUserService implements SyncUserUseCase {
     }
 
     /**
-     * Slug para /p/{username}: primero preferred_username; si falta, el prefijo
-     * local del email. La unicidad definitiva se reforzara con un generador
-     * dedicado ante conflictos (trabajo futuro).
+     * Slug para la vista publica /api/v1/public/portfolios/{username}: primero
+     * preferred_username; si falta, el prefijo local del email. La unicidad
+     * definitiva se reforzara con un generador dedicado ante conflictos
+     * (trabajo futuro).
      */
     private String resolveUsername(AuthenticatedUser authenticatedUser) {
         String candidate = authenticatedUser.preferredUsername();
