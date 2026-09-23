@@ -3,6 +3,7 @@ package com.bpao.devfoliobuilderapi.infrastructure.adapter.out.persistence.r2dbc
 import com.bpao.devfoliobuilderapi.application.dto.catalog.TechnologyCatalogItem;
 import com.bpao.devfoliobuilderapi.application.port.out.catalog.CatalogPersistencePort;
 import com.bpao.devfoliobuilderapi.domain.model.Category;
+import com.bpao.devfoliobuilderapi.domain.model.Technology;
 import com.bpao.devfoliobuilderapi.infrastructure.adapter.out.persistence.entity.CategoryEntity;
 import com.bpao.devfoliobuilderapi.infrastructure.adapter.out.persistence.entity.TechnologyEntity;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -47,6 +49,18 @@ public class CatalogPersistenceAdapter implements CatalogPersistencePort {
     private Mono<Map<Long, String>> categoryNames() {
         return categoryRepository.findAll()
                 .collectMap(CategoryEntity::getId, CategoryEntity::getName);
+    }
+
+    @Override
+    public Flux<Technology> findByIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Flux.empty();
+        }
+        return technologyRepository.findAllById(ids).map(this::toDomainTechnology);
+    }
+
+    private Technology toDomainTechnology(TechnologyEntity entity) {
+        return new Technology(entity.getId(), entity.getName(), entity.getIconUrl(), entity.getCategoryId());
     }
 
     private TechnologyCatalogItem toCatalogItem(TechnologyEntity entity, String categoryName) {

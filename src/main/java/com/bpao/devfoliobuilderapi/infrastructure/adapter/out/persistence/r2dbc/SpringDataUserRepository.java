@@ -7,4 +7,6 @@ import reactor.core.publisher.Mono;
 public interface SpringDataUserRepository extends ReactiveCrudRepository<UserEntity, Long> {
 
     Mono<UserEntity> findByAuthId(String authId);
+
+    Mono<UserEntity> findByUsername(String username);
 }

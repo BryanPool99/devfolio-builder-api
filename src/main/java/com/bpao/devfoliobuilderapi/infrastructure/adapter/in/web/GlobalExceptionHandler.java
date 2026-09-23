@@ -1,6 +1,7 @@
 package com.bpao.devfoliobuilderapi.infrastructure.adapter.in.web;
 
 import com.bpao.devfoliobuilderapi.domain.exception.DomainException;
+import com.bpao.devfoliobuilderapi.domain.exception.NotFoundException;
 import com.bpao.devfoliobuilderapi.domain.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     ProblemDetail handleUserNotFound(UserNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    ProblemDetail handleNotFound(NotFoundException ex) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

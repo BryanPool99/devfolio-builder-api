@@ -22,6 +22,11 @@ public class UserPersistenceAdapter implements UserPersistencePort {
     }
 
     @Override
+    public Mono<User> findByUsername(String username) {
+        return repository.findByUsername(username).map(this::toDomain);
+    }
+
+    @Override
     public Mono<User> save(User user) {
         return repository.save(toEntity(user))
                 .flatMap(saved -> repository.findByAuthId(saved.getAuthId()))

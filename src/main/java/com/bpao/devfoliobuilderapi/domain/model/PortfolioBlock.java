@@ -34,4 +34,14 @@ public class PortfolioBlock {
                 .settings(EMPTY_SETTINGS)
                 .build();
     }
+
+    public static PortfolioBlock create(Long portfolioId, String type, int position, String settings) {
+        return builder()
+                .portfolioId(portfolioId)
+                .type(type)
+                .position(position)
+                .settings(settings == null ? EMPTY_SETTINGS : settings)
+                .createdAt(Instant.now())
+                .build();
+    }
 }

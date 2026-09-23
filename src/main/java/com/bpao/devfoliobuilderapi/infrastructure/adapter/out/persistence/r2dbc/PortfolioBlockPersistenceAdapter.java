@@ -5,7 +5,10 @@ import com.bpao.devfoliobuilderapi.domain.model.PortfolioBlock;
 import com.bpao.devfoliobuilderapi.infrastructure.adapter.out.persistence.entity.PortfolioBlockEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * Adaptador de salida: traduce entre el hexagono (PortfolioBlock) y Spring Data R2DBC.
@@ -19,6 +22,24 @@ public class PortfolioBlockPersistenceAdapter implements PortfolioBlockPersisten
     @Override
     public Mono<PortfolioBlock> save(PortfolioBlock block) {
         return repository.save(toEntity(block)).map(this::toDomain);
+    }
+
+    @Override
+    public Flux<PortfolioBlock> saveAll(List<PortfolioBlock> blocks) {
+        return Flux.fromIterable(blocks)
+                .map(this::toEntity)
+                .as(repository::saveAll)
+                .map(this::toDomain);
+    }
+
+    @Override
+    public Flux<PortfolioBlock> findByPortfolioId(Long portfolioId) {
+        return repository.findByPortfolioId(portfolioId).map(this::toDomain);
+    }
+
+    @Override
+    public Mono<Void> deleteAllByPortfolioId(Long portfolioId) {
+        return repository.deleteByPortfolioId(portfolioId);
     }
 
     private PortfolioBlockEntity toEntity(PortfolioBlock block) {
