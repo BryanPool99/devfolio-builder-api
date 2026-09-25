@@ -3,6 +3,7 @@ package com.bpao.devfoliobuilderapi.infrastructure.adapter.out.persistence.r2dbc
 import com.bpao.devfoliobuilderapi.application.port.out.portfolio.PortfolioBlockPersistencePort;
 import com.bpao.devfoliobuilderapi.domain.model.PortfolioBlock;
 import com.bpao.devfoliobuilderapi.infrastructure.adapter.out.persistence.entity.PortfolioBlockEntity;
+import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -48,7 +49,7 @@ public class PortfolioBlockPersistenceAdapter implements PortfolioBlockPersisten
                 .portfolioId(block.getPortfolioId())
                 .type(block.getType())
                 .position(block.getPosition())
-                .settings(block.getSettings())
+                .settings(toJson(block.getSettings()))
                 .createdAt(block.getCreatedAt())
                 .build();
     }
@@ -59,8 +60,16 @@ public class PortfolioBlockPersistenceAdapter implements PortfolioBlockPersisten
                 .portfolioId(entity.getPortfolioId())
                 .type(entity.getType())
                 .position(entity.getPosition())
-                .settings(entity.getSettings())
+                .settings(fromJson(entity.getSettings()))
                 .createdAt(entity.getCreatedAt())
                 .build();
+    }
+
+    private Json toJson(String settings) {
+        return settings == null ? null : Json.of(settings);
+    }
+
+    private String fromJson(Json settings) {
+        return settings == null ? null : settings.asString();
     }
 }

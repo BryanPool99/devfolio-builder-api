@@ -11,12 +11,16 @@ spring:
     pool:
       initial-size: 5
       max-size: 20
+app:
   security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${JWT_ISSUER_URI:https://ep-withered-salad-acdqzx2b.neonauth.sa-east-1.aws.neon.tech}
-          jwk-set-uri: ${JWT_JWKS_URI:https://ep-withered-salad-acdqzx2b.neonauth.sa-east-1.aws.neon.tech/foliobuilderdevbd/auth/.well-known/jwks.json}
+    jwt:
+      # Un solo secreto, el algoritmo es HS256. El valor por defecto sirve para
+      # desarrollo; en produccion define JWT_SECRET con 32+ caracteres aleatorios.
+      secret: ${JWT_SECRET:devfolio-builder-secreto-local-de-desarrollo-cambiar-en-produccion}
+      issuer: ${JWT_ISSUER:https://devfolio-builder.api}
+      access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:PT15M}
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200,http://localhost:5173}
 
 springdoc:
   api-docs:

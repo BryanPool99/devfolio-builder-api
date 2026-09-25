@@ -12,5 +12,7 @@ public interface UserPersistencePort {
 
     Mono<User> findByUsername(String username);
 
+    Mono<User> findByEmail(String email);
+
     Mono<User> save(User user);
 }

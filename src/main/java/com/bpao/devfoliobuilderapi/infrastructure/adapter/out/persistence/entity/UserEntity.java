@@ -1,5 +1,6 @@
 package com.bpao.devfoliobuilderapi.infrastructure.adapter.out.persistence.entity;
 
+import com.bpao.devfoliobuilderapi.domain.model.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,10 @@ public class UserEntity {
     private String authId;
     private String username;
     private String email;
+    private String passwordHash;
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+    private Boolean emailVerified;
     private Instant createdAt;
+    private Instant updatedAt;
 }

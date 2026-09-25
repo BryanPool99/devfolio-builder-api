@@ -27,6 +27,11 @@ public class UserPersistenceAdapter implements UserPersistencePort {
     }
 
     @Override
+    public Mono<User> findByEmail(String email) {
+        return repository.findByEmailIgnoreCase(email).map(this::toDomain);
+    }
+
+    @Override
     public Mono<User> save(User user) {
         return repository.save(toEntity(user))
                 .flatMap(saved -> repository.findByAuthId(saved.getAuthId()))
@@ -39,7 +44,11 @@ public class UserPersistenceAdapter implements UserPersistencePort {
                 .authId(user.getAuthId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .passwordHash(user.getPasswordHash())
+                .role(user.getRole())
+                .emailVerified(user.isEmailVerified())
                 .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
@@ -49,7 +58,11 @@ public class UserPersistenceAdapter implements UserPersistencePort {
                 .authId(entity.getAuthId())
                 .username(entity.getUsername())
                 .email(entity.getEmail())
+                .passwordHash(entity.getPasswordHash())
+                .role(entity.getRole())
+                .emailVerified(Boolean.TRUE.equals(entity.getEmailVerified()))
                 .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
                 .build();
     }
 }
