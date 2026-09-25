@@ -9,4 +9,6 @@ public interface SpringDataUserRepository extends ReactiveCrudRepository<UserEnt
     Mono<UserEntity> findByAuthId(String authId);
 
     Mono<UserEntity> findByUsername(String username);
+
+    Mono<UserEntity> findByEmailIgnoreCase(String email);
 }

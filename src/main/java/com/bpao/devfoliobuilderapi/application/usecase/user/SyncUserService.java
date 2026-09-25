@@ -17,9 +17,10 @@ import reactor.core.publisher.Mono;
 import java.util.Locale;
 
 /**
- * Caso de uso: auto-sincronizacion del usuario con Neon Auth.
- * En el primer JWT valido crea el usuario, su portfolio por defecto y el bloque
- * HERO inicial. Los registros posteriores solo devuelven lo existente.
+ * Caso de uso: sincronizacion del usuario autenticado.
+ * Con el registro propio el usuario ya existe, asi que en la practica solo
+ * asegura el portfolio por defecto y el bloque HERO inicial. Los registros
+ * posteriores solo devuelven lo existente.
  */
 @Service
 @RequiredArgsConstructor

@@ -4,7 +4,7 @@ import com.bpao.devfoliobuilderapi.application.dto.AuthenticatedUser;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 /**
- * Traduccion entre el JWT de Neon Auth y el principal del hexagono.
+ * Traduccion entre el JWT emitido por este backend y el principal del hexagono.
  */
 public final class AuthenticatedUserMapper {
 
