@@ -101,7 +101,7 @@ public class ProjectManagementService implements ManageProjectUseCase {
 
     private Mono<ProjectResponse> createProject(Long portfolioId, ProjectRequest request) {
         Project project = Project.create(portfolioId, request.title(), request.description(),
-                request.repositoryUrl(), request.liveDemoUrl(), request.imageUrl());
+                request.repositoryUrl(), request.liveDemoUrl(), request.imageUrl(), request.visibleOrDefault());
         Mono<ProjectResponse> creation = projectPersistence.save(project)
                 .flatMap(saved -> projectTechnologyPersistence
                         .saveAll(saved.getId(), technologyIds(request))
@@ -112,7 +112,7 @@ public class ProjectManagementService implements ManageProjectUseCase {
 
     private Mono<ProjectResponse> updateProject(Project existing, ProjectRequest request) {
         Project updated = existing.withDetails(request.title(), request.description(),
-                request.repositoryUrl(), request.liveDemoUrl(), request.imageUrl());
+                request.repositoryUrl(), request.liveDemoUrl(), request.imageUrl(), request.visibleOrDefault());
         Mono<ProjectResponse> update = projectTechnologyPersistence.deleteByProjectId(updated.getId())
                 .then(projectPersistence.save(updated))
                 .flatMap(saved -> projectTechnologyPersistence

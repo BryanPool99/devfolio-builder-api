@@ -43,6 +43,16 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
     }
 
     @Override
+    public Flux<Project> findVisiblePageByPortfolioId(Long portfolioId, int limit, long offset) {
+        return repository.findVisiblePageByPortfolioId(portfolioId, limit, offset).map(this::toDomain);
+    }
+
+    @Override
+    public Mono<Long> countVisibleByPortfolioId(Long portfolioId) {
+        return repository.countVisibleByPortfolioId(portfolioId);
+    }
+
+    @Override
     public Mono<Void> deleteById(Long id) {
         return repository.deleteById(id);
     }
@@ -56,6 +66,7 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
                 .repositoryUrl(project.getRepositoryUrl())
                 .liveDemoUrl(project.getLiveDemoUrl())
                 .imageUrl(project.getImageUrl())
+                .visible(project.isVisible())
                 .createdAt(project.getCreatedAt())
                 .build();
     }
@@ -69,6 +80,7 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
                 .repositoryUrl(entity.getRepositoryUrl())
                 .liveDemoUrl(entity.getLiveDemoUrl())
                 .imageUrl(entity.getImageUrl())
+                .visible(Boolean.TRUE.equals(entity.getVisible()))
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

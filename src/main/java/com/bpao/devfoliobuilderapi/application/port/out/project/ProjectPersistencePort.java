@@ -19,5 +19,12 @@ public interface ProjectPersistencePort {
 
     Mono<Long> countByPortfolioId(Long portfolioId);
 
+    /**
+     * Pagina filtrando solo proyectos visibles; la usa la vista publica.
+     */
+    Flux<Project> findVisiblePageByPortfolioId(Long portfolioId, int limit, long offset);
+
+    Mono<Long> countVisibleByPortfolioId(Long portfolioId);
+
     Mono<Void> deleteById(Long id);
 }

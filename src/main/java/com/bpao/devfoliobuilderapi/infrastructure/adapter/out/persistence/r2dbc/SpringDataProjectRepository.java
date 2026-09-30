@@ -15,4 +15,10 @@ public interface SpringDataProjectRepository extends ReactiveCrudRepository<Proj
     Flux<ProjectEntity> findPageByPortfolioId(Long portfolioId, int limit, long offset);
 
     Mono<Long> countByPortfolioId(Long portfolioId);
+
+    @Query("SELECT * FROM projects WHERE portfolio_id = :portfolioId AND visible = TRUE ORDER BY id LIMIT :limit OFFSET :offset")
+    Flux<ProjectEntity> findVisiblePageByPortfolioId(Long portfolioId, int limit, long offset);
+
+    @Query("SELECT count(*) FROM projects WHERE portfolio_id = :portfolioId AND visible = TRUE")
+    Mono<Long> countVisibleByPortfolioId(Long portfolioId);
 }

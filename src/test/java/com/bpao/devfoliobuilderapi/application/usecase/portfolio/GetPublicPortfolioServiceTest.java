@@ -55,8 +55,8 @@ class GetPublicPortfolioServiceTest {
                 PortfolioBlock.builder().id(1L).portfolioId(10L).type("HERO").position(0).settings("{}").build(),
                 PortfolioBlock.builder().id(2L).portfolioId(10L).type("PROJECTS").position(1).settings("{}").build()));
         PageResponse<ProjectResponse> projectsPage = PageResponse.of(List.of(
-                new ProjectResponse(50L, "Mi app", null, null, null, null, null, List.of())), 0, 20, 1L);
-        when(projectResponseAssembler.pageByPortfolio(10L, 0, 20)).thenReturn(Mono.just(projectsPage));
+                new ProjectResponse(50L, "Mi app", null, null, null, null, null, List.of(), true)), 0, 20, 1L);
+        when(projectResponseAssembler.visiblePageByPortfolio(10L, 0, 20)).thenReturn(Mono.just(projectsPage));
 
         StepVerifier.create(service.getByUsername("juanperez", 0, 20))
                 .assertNext(response -> {
@@ -79,14 +79,14 @@ class GetPublicPortfolioServiceTest {
         when(userPersistence.findByUsername("juanperez")).thenReturn(Mono.just(user));
         when(portfolioPersistence.findByUserId(1L)).thenReturn(Mono.just(portfolio));
         when(portfolioBlockPersistence.findByPortfolioId(10L)).thenReturn(Flux.empty());
-        when(projectResponseAssembler.pageByPortfolio(10L, 1, 5))
+        when(projectResponseAssembler.visiblePageByPortfolio(10L, 1, 5))
                 .thenReturn(Mono.just(PageResponse.of(List.of(), 1, 5, 0L)));
 
         StepVerifier.create(service.getByUsername("juanperez", 1, 5))
                 .expectNextCount(1)
                 .verifyComplete();
 
-        verify(projectResponseAssembler).pageByPortfolio(eq(10L), eq(1), eq(5));
+        verify(projectResponseAssembler).visiblePageByPortfolio(eq(10L), eq(1), eq(5));
     }
 
     @Test

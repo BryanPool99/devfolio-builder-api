@@ -22,10 +22,12 @@ public class Project {
     private final String repositoryUrl;
     private final String liveDemoUrl;
     private final String imageUrl;
+    private final boolean visible;
     private final Instant createdAt;
 
     public static Project create(Long portfolioId, String title, String description,
-                                 String repositoryUrl, String liveDemoUrl, String imageUrl) {
+                                 String repositoryUrl, String liveDemoUrl, String imageUrl,
+                                 boolean visible) {
         if (title == null || title.isBlank()) {
             throw new DomainException("El titulo del proyecto no puede ser nulo ni vacio");
         }
@@ -36,6 +38,7 @@ public class Project {
                 .repositoryUrl(repositoryUrl)
                 .liveDemoUrl(liveDemoUrl)
                 .imageUrl(imageUrl)
+                .visible(visible)
                 .createdAt(Instant.now())
                 .build();
     }
@@ -49,12 +52,14 @@ public class Project {
                 .repositoryUrl(repositoryUrl)
                 .liveDemoUrl(liveDemoUrl)
                 .imageUrl(imageUrl)
+                .visible(visible)
                 .createdAt(createdAt)
                 .build();
     }
 
     public Project withDetails(String newTitle, String newDescription,
-                               String newRepositoryUrl, String newLiveDemoUrl, String newImageUrl) {
+                               String newRepositoryUrl, String newLiveDemoUrl, String newImageUrl,
+                               boolean newVisible) {
         if (newTitle == null || newTitle.isBlank()) {
             throw new DomainException("El titulo del proyecto no puede ser nulo ni vacio");
         }
@@ -66,6 +71,7 @@ public class Project {
                 .repositoryUrl(newRepositoryUrl)
                 .liveDemoUrl(newLiveDemoUrl)
                 .imageUrl(newImageUrl)
+                .visible(newVisible)
                 .createdAt(createdAt)
                 .build();
     }

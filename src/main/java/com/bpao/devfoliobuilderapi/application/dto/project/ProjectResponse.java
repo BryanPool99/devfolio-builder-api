@@ -14,5 +14,6 @@ public record ProjectResponse(
         String liveDemoUrl,
         String imageUrl,
         Instant createdAt,
-        List<TechnologySummary> technologies) {
+        List<TechnologySummary> technologies,
+        boolean visible) {
 }

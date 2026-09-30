@@ -24,5 +24,6 @@ public class ProjectEntity {
     private String repositoryUrl;
     private String liveDemoUrl;
     private String imageUrl;
+    private Boolean visible;
     private Instant createdAt;
 }

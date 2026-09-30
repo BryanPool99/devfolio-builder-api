@@ -10,6 +10,7 @@ import com.bpao.devfoliobuilderapi.domain.model.Project;
 import com.bpao.devfoliobuilderapi.domain.model.Technology;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -37,12 +38,29 @@ public class ProjectResponseAssembler {
     }
 
     public Mono<PageResponse<ProjectResponse>> pageByPortfolio(Long portfolioId, int page, int size) {
+        return page(
+                projectPersistence.findPageByPortfolioId(portfolioId, size, (long) page * size),
+                projectPersistence.countByPortfolioId(portfolioId),
+                page, size);
+    }
+
+    /**
+     * Pagina de proyectos para la vista publica: excluye los marcados
+     * como no visibles.
+     */
+    public Mono<PageResponse<ProjectResponse>> visiblePageByPortfolio(Long portfolioId, int page, int size) {
+        return page(
+                projectPersistence.findVisiblePageByPortfolioId(portfolioId, size, (long) page * size),
+                projectPersistence.countVisibleByPortfolioId(portfolioId),
+                page, size);
+    }
+
+    private Mono<PageResponse<ProjectResponse>> page(Flux<Project> projects, Mono<Long> total,
+                                                     int page, int size) {
         requireValidPage(page, size);
-        Mono<List<ProjectResponse>> content = projectPersistence
-                .findPageByPortfolioId(portfolioId, size, (long) page * size)
+        Mono<List<ProjectResponse>> content = projects
                 .concatMap(this::toResponse)
                 .collectList();
-        Mono<Long> total = projectPersistence.countByPortfolioId(portfolioId);
         return Mono.zip(content, total,
                 (items, count) -> PageResponse.of(items, page, size, count));
     }

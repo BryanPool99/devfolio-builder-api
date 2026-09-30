@@ -19,6 +19,8 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,6 +77,24 @@ class ProjectResponseAssemblerTest {
                     assertThat(page.totalPages()).isEqualTo(3);
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    void paginaVisibleUsaLasConsultasFiltradas() {
+        Project p1 = project(500L, "Uno");
+        when(projectPersistence.findVisiblePageByPortfolioId(PORTFOLIO_ID, 2, 0)).thenReturn(Flux.just(p1));
+        when(projectPersistence.countVisibleByPortfolioId(PORTFOLIO_ID)).thenReturn(Mono.just(3L));
+        when(projectTechnologyPersistence.findTechnologyIdsByProjectId(500L)).thenReturn(Flux.empty());
+
+        StepVerifier.create(assembler.visiblePageByPortfolio(PORTFOLIO_ID, 0, 2))
+                .assertNext(page -> {
+                    assertThat(page.content()).hasSize(1);
+                    assertThat(page.totalElements()).isEqualTo(3L);
+                    assertThat(page.totalPages()).isEqualTo(2);
+                })
+                .verifyComplete();
+
+        verify(projectPersistence, never()).findPageByPortfolioId(any(), anyInt(), anyLong());
     }
 
     @Test

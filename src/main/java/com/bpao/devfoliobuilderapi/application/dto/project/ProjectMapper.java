@@ -23,6 +23,7 @@ public final class ProjectMapper {
                 project.getLiveDemoUrl(),
                 project.getImageUrl(),
                 project.getCreatedAt(),
-                summaries);
+                summaries,
+                project.isVisible());
     }
 }

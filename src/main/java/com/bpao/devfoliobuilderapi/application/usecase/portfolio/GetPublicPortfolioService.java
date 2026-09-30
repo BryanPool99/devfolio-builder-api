@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 /**
  * Caso de uso: lectura publica del portafolio por username. Devuelve 404 si
  * el usuario no existe, si no tiene portfolio o si no esta publicado. Los
- * proyectos se devuelven paginados por offset/limit.
+ * proyectos se devuelven paginados por offset/limit y solo si son visibles.
  */
 @Service
 @RequiredArgsConstructor
@@ -41,7 +41,7 @@ public class GetPublicPortfolioService implements GetPublicPortfolioUseCase {
     private Mono<PublicPortfolioResponse> assemble(User user, Portfolio portfolio, int page, int size) {
         return portfolioBlockPersistence.findByPortfolioId(portfolio.getId())
                 .collectList()
-                .flatMap(blocks -> projectResponseAssembler.pageByPortfolio(portfolio.getId(), page, size)
+                .flatMap(blocks -> projectResponseAssembler.visiblePageByPortfolio(portfolio.getId(), page, size)
                         .map(projectsPage -> new PublicPortfolioResponse(
                                 user.getUsername(),
                                 portfolio.getTitle(),

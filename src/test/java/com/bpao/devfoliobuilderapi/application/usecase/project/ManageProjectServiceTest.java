@@ -69,11 +69,11 @@ class ManageProjectServiceTest {
         when(projectPersistence.save(any(Project.class))).thenReturn(Mono.just(saved));
         when(projectTechnologyPersistence.saveAll(100L, List.of(1L, 2L))).thenReturn(Mono.empty());
         when(projectResponseAssembler.toResponse(saved))
-                .thenReturn(Mono.just(new ProjectResponse(100L, "Mi app", null, null, null, null, null, List.of())));
+                .thenReturn(Mono.just(new ProjectResponse(100L, "Mi app", null, null, null, null, null, List.of(), true)));
         passthroughTransaction();
 
         StepVerifier.create(service.create(principal, new ProjectRequest(
-                        "Mi app", "desc", "https://repo", "https://demo", null, List.of(1L, 2L))))
+                        "Mi app", "desc", "https://repo", "https://demo", null, List.of(1L, 2L), true)))
                 .assertNext(response -> assertThat(response.title()).isEqualTo("Mi app"))
                 .verifyComplete();
 
@@ -89,15 +89,16 @@ class ManageProjectServiceTest {
         when(projectPersistence.save(any(Project.class))).thenReturn(Mono.just(saved));
         when(projectTechnologyPersistence.saveAll(100L, List.of())).thenReturn(Mono.empty());
         when(projectResponseAssembler.toResponse(saved))
-                .thenReturn(Mono.just(new ProjectResponse(100L, "Mi app", null, null, null, null, null, List.of())));
+                .thenReturn(Mono.just(new ProjectResponse(100L, "Mi app", null, null, null, null, null, List.of(), true)));
         passthroughTransaction();
 
         StepVerifier.create(service.create(principal, new ProjectRequest(
-                        "Mi app", null, null, null, null, null)))
+                        "Mi app", null, null, null, null, null, null)))
                 .assertNext(response -> assertThat(response.title()).isEqualTo("Mi app"))
                 .verifyComplete();
 
         verify(projectTechnologyPersistence).saveAll(100L, List.of());
+        verify(projectPersistence).save(argThat(Project::isVisible));
         verify(catalogPersistence, never()).findByIds(any());
     }
 
@@ -108,7 +109,7 @@ class ManageProjectServiceTest {
                 .thenReturn(Flux.just(new Technology(1L, "Java", "/java.svg", 1L)));
 
         StepVerifier.create(service.create(principal, new ProjectRequest(
-                        "Mi app", null, null, null, null, List.of(1L, 99L))))
+                        "Mi app", null, null, null, null, List.of(1L, 99L), true)))
                 .expectErrorSatisfies(error -> {
                     assertThat(error).isInstanceOf(DomainException.class);
                     assertThat(error.getMessage()).contains("99");
@@ -130,16 +131,39 @@ class ManageProjectServiceTest {
         when(projectPersistence.save(any(Project.class))).thenReturn(Mono.just(existing));
         when(projectTechnologyPersistence.saveAll(200L, List.of(3L))).thenReturn(Mono.empty());
         when(projectResponseAssembler.toResponse(any(Project.class)))
-                .thenReturn(Mono.just(new ProjectResponse(200L, "Despues", null, null, null, null, null, List.of())));
+                .thenReturn(Mono.just(new ProjectResponse(200L, "Despues", null, null, null, null, null, List.of(), true)));
         passthroughTransaction();
 
         StepVerifier.create(service.update(principal, 200L, new ProjectRequest(
-                        "Despues", null, null, null, null, List.of(3L))))
+                        "Despues", null, null, null, null, List.of(3L), true)))
                 .assertNext(response -> assertThat(response.title()).isEqualTo("Despues"))
                 .verifyComplete();
 
         verify(projectTechnologyPersistence).deleteByProjectId(200L);
         verify(projectTechnologyPersistence).saveAll(200L, List.of(3L));
+    }
+
+    @Test
+    void updateCambiaLaVisibilidadDelProyecto() {
+        withPortfolio();
+        Project existing = Project.builder()
+                .id(200L).portfolioId(PORTFOLIO_ID).title("Mi app").visible(true)
+                .createdAt(java.time.Instant.now()).build();
+        when(projectPersistence.findById(200L)).thenReturn(Mono.just(existing));
+        when(projectTechnologyPersistence.deleteByProjectId(200L)).thenReturn(Mono.empty());
+        when(projectPersistence.save(any(Project.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+        when(projectTechnologyPersistence.saveAll(200L, List.of())).thenReturn(Mono.empty());
+        when(projectResponseAssembler.toResponse(any(Project.class)))
+                .thenReturn(Mono.just(new ProjectResponse(200L, "Mi app", null, null, null, null, null, List.of(), false)));
+        passthroughTransaction();
+
+        StepVerifier.create(service.update(principal, 200L, new ProjectRequest(
+                        "Mi app", null, null, null, null, List.of(), false)))
+                .assertNext(response -> assertThat(response.visible()).isFalse())
+                .verifyComplete();
+
+        verify(projectPersistence).save(argThat(project -> !project.isVisible()));
     }
 
     @Test
@@ -150,7 +174,7 @@ class ManageProjectServiceTest {
         when(projectPersistence.findById(300L)).thenReturn(Mono.just(foreign));
 
         StepVerifier.create(service.update(principal, 300L, new ProjectRequest(
-                        "X", null, null, null, null, List.of())))
+                        "X", null, null, null, null, List.of(), true)))
                 .expectError(NotFoundException.class)
                 .verify();
 
@@ -177,7 +201,7 @@ class ManageProjectServiceTest {
     void listDelegaLaPaginacionAlEnsamblador() {
         withPortfolio();
         PageResponse<ProjectResponse> page = PageResponse.of(List.of(
-                new ProjectResponse(500L, "Uno", null, null, null, null, null, List.of())), 0, 2, 1L);
+                new ProjectResponse(500L, "Uno", null, null, null, null, null, List.of(), true)), 0, 2, 1L);
         when(projectResponseAssembler.pageByPortfolio(PORTFOLIO_ID, 0, 2)).thenReturn(Mono.just(page));
 
         StepVerifier.create(service.list(principal, 0, 2))
